@@ -16,3 +16,37 @@ async function testConnection() {
 }
 
 testConnection();
+// Function to load students and display in table
+async function loadStudents() {
+  const { data, error } = await supabase.from('students').select('*');
+
+  const tableBody = document.getElementById('studentsTableBody');
+  tableBody.innerHTML = ""; // Clear previous rows
+
+  if (error) {
+    tableBody.innerHTML = `<tr><td colspan="4">Error loading students: ${error.message}</td></tr>`;
+    return;
+  }
+
+  if (data.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="4">No students found.</td></tr>`;
+    return;
+  }
+
+  data.forEach(student => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${student.name}</td>
+      <td>${student.roll_number}</td>
+      <td>${student.marks}</td>
+      <td>
+        <button class="edit-btn" data-id="${student.id}">Edit</button>
+        <button class="delete-btn" data-id="${student.id}">Delete</button>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+}
+
+// Call this function after testing connection
+loadStudents();
